@@ -8,14 +8,36 @@
 
   // On the range [0,1].
   let sliderValue = 0.0;
+  let active = false;
   const MAX_DELAY_MS = 100.0;
+  const MAX_PULSE_DELAY = 32.0;
+  const PULSE_DURATION = 256;
   const timestamps = [];
   const NUM_BARS = 150;
   const NUM_CARDS = 50;
 
   function delay() {
     const start = Date.now();
-    while (Date.now() - start < MAX_DELAY_MS * sliderValue) {}
+    let pulseDelay = 0;
+    if (active) {
+      // [0, 511]
+      pulseDelay = start % (PULSE_DURATION * 2);
+      // [-255, 255]
+      pulseDelay -= PULSE_DURATION;
+      if (pulseDelay < 0) {
+        pulseDelay = 0;
+      } else {
+        // [-127, 127]
+        pulseDelay -= PULSE_DURATION / 2;
+        // [0, 127]
+        pulseDelay = Math.abs(pulseDelay);
+        // [0.0, 1.0]
+        pulseDelay /= 0.5 * PULSE_DURATION;
+        pulseDelay = (1.0 - pulseDelay) * MAX_PULSE_DELAY;
+      }
+    }
+    let duration = Math.max(pulseDelay, sliderValue * MAX_DELAY_MS);
+    while (Date.now() - start < duration) {}
     window.requestAnimationFrame(delay);
   }
 
@@ -62,6 +84,22 @@
     window.requestAnimationFrame(tick);
   };
 
+  function handleScroll() {
+    if (!active) {
+      let target = document.querySelector("IFRAME");
+      if (target) {
+        target.contentWindow.postMessage("scroll", "*");
+      } else {
+        window.parent.postMessage("scroll", "*");
+      }
+      active = true;
+    }
+  }
+
+  function handleMessage() {
+    active = false;
+  }
+
   function init() {
     constructCards();
     const pre = document.createElement('pre');
@@ -76,10 +114,9 @@
       sliderValue = e.target.value / 100.0;
       pre.innerText = `${sliderValue * 100}%`;
     };
+    onmessage = handleMessage;
+    document.scrollingElement.onscroll = handleScroll;
     delay();
     constructFpsMeter();
     tick();
   }
-
-  window.onload = init;
-})(self);
