@@ -120,3 +120,6 @@
     constructFpsMeter();
     tick();
   }
+
+  window.onload = init;
+})(self);
