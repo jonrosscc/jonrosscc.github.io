@@ -1,0 +1,37 @@
+<!DOCTYPE html>                                                                 
+<html>                                                                          
+<body>                                                                          
+                                                                                
+<div id="mydiv" style="position:relative;">Some text.</div>                     
+                                                                                
+<script>                                                                        
+const adiv = document.getElementById("mydiv");                                  
+let leftPos = 0;                                                                
+let right = true;                                                               
+var prev_ts = 0;                                                                
+                                                                                
+function moveDiv(timestamp){                                                    
+  if (timestamp - prev_ts < 1) {                                                
+    console.log("JR double rAF");                                               
+  }                                                                             
+  prev_ts = timestamp;                                                          
+  if (right) {                                                                  
+    leftPos += 5;                                                               
+    if (leftPos >= 400) {                                                       
+      right = false;                                                            
+    }                                                                           
+  } else {                                                                      
+    leftPos -= 5;                                                               
+    if (leftPos <= 0) {                                                         
+      right = true;                                                             
+    }                                                                           
+  }                                                                             
+  adiv.style.left = leftPos + "px";                                             
+  requestAnimationFrame(moveDiv);                                               
+}                                                                               
+                                                                                
+requestAnimationFrame(moveDiv);                                                 
+</script>                                                                       
+                                                                                
+</body>                                                                         
+</html>                                                                         
