@@ -10,8 +10,10 @@ let leftPos = 0;
 let right = true;                                                               
 var prev_ts = 0;                                                                
                                                                                 
-function moveDiv(timestamp){                                                    
-  if (timestamp - prev_ts < 1) {                                                
+function moveDiv(timestamp){
+  delta = timestamp - prev_ts;
+  console.log("JR delta "+delta);
+  if (delta < 1) {                                                
     console.log("JR double rAF");                                               
   }                                                                             
   prev_ts = timestamp;                                                          
