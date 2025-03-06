@@ -9,8 +9,6 @@ function imageClick(element) {
   modal.style.display = "block";
   modalImg.src = element.src;
   captionText.innerHTML = element.title;
-
-  console.log(element.title);
 };
 
 function closeModal() {
